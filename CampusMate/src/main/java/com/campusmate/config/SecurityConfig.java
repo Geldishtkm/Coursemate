@@ -56,6 +56,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/public/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/queries/**").permitAll()  // Allow all query endpoints
+                .requestMatchers("/projects/**").permitAll()  // Allow all project endpoints
                 .anyRequest().permitAll()  // Temporarily allow all requests for testing
             )
             .exceptionHandling(exception -> exception

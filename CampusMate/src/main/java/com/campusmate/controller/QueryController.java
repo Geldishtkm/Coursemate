@@ -260,7 +260,6 @@ public class QueryController {
     }
     
     @PostMapping("/{id}/responses")
-    @org.springframework.transaction.annotation.Transactional
     public ResponseEntity<ApiResponse<Response>> createResponse(@PathVariable String id, @RequestBody CreateResponseRequest request) {
         log.info("Creating response for query with id: {}", id);
         
@@ -269,35 +268,8 @@ public class QueryController {
             Query query = queryService.getQueryById(id)
                 .orElseThrow(() -> new RuntimeException("Query not found"));
             
-            // For now, create a default user (in a real app, get from authentication context)
-            User author;
-            try {
-                // First try to find any existing user
-                Optional<User> existingUser = userRepository.findAll().stream().findFirst();
-                if (existingUser.isPresent()) {
-                    author = existingUser.get();
-                } else {
-                    // Check if our default anonymous user already exists
-                    Optional<User> anonymousUser = userRepository.findByEmail("anonymous@campusmate.com");
-                    if (anonymousUser.isPresent()) {
-                        author = anonymousUser.get();
-                    } else {
-                        // Create a default user if none exists
-                        User defaultUser = new User();
-                        defaultUser.setEmail("anonymous@campusmate.com");
-                        defaultUser.setFirstName("Anonymous");
-                        defaultUser.setLastName("User");
-                        defaultUser.setPassword("password123"); // This would be hashed in real app
-                        defaultUser.setRole(com.campusmate.enums.UserRole.STUDENT);
-                        defaultUser.setIsActive(true);
-                        defaultUser.setDepartment("Computer Science");
-                        author = userRepository.save(defaultUser);
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Error creating/finding user for response: {}", e.getMessage());
-                throw new RuntimeException("Failed to create or find user for response: " + e.getMessage());
-            }
+            // Get or create a default user for the response
+            User author = getOrCreateDefaultUser();
             
             // Create response entity
             Response response = new Response();
@@ -347,5 +319,39 @@ public class QueryController {
     public ResponseEntity<ApiResponse<String>> healthCheck() {
         log.info("Health check endpoint called");
         return ResponseEntity.ok(ApiResponse.success("Query controller is healthy", "OK"));
+    }
+    
+    /**
+     * Helper method to get or create a default user for responses
+     */
+    private User getOrCreateDefaultUser() {
+        try {
+            // First try to find any existing user
+            Optional<User> existingUser = userRepository.findAll().stream().findFirst();
+            if (existingUser.isPresent()) {
+                return existingUser.get();
+            }
+            
+            // Check if our default anonymous user already exists
+            Optional<User> anonymousUser = userRepository.findByEmail("anonymous@campusmate.com");
+            if (anonymousUser.isPresent()) {
+                return anonymousUser.get();
+            }
+            
+            // Create a default user if none exists
+            User defaultUser = new User();
+            defaultUser.setEmail("anonymous@campusmate.com");
+            defaultUser.setFirstName("Anonymous");
+            defaultUser.setLastName("User");
+            defaultUser.setPassword("password123"); // This would be hashed in real app
+            defaultUser.setRole(com.campusmate.enums.UserRole.STUDENT);
+            defaultUser.setIsActive(true);
+            defaultUser.setDepartment("Computer Science");
+            return userRepository.save(defaultUser);
+            
+        } catch (Exception e) {
+            log.error("Error creating/finding user for response: {}", e.getMessage());
+            throw new RuntimeException("Failed to create or find user for response: " + e.getMessage());
+        }
     }
 }

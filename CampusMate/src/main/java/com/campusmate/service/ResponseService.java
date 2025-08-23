@@ -6,6 +6,7 @@ import com.campusmate.repository.ResponseRepository;
 import com.campusmate.repository.QueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +29,9 @@ public class ResponseService {
         return responseRepository.findById(id);
     }
     
+    @Transactional
     public Response createResponse(Response response) {
-        response.setId(UUID.randomUUID().toString());
+        // Let Hibernate auto-generate the UUID
         Response savedResponse = responseRepository.save(response);
         
         // Update query response count
@@ -83,6 +85,7 @@ public class ResponseService {
         return responseRepository.findTopResponsesByUpvotes(minUpvotes);
     }
     
+    @Transactional
     private void updateQueryResponseCount(String queryId) {
         Query query = queryRepository.findById(queryId)
             .orElseThrow(() -> new RuntimeException("Query not found"));
