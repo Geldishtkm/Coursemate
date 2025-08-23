@@ -79,6 +79,11 @@ public class Course {
     @Column(name = "max_students", nullable = false)
     private Integer maxStudents;
 
+    @NotBlank(message = "Difficulty level is required")
+    @Size(max = 20, message = "Difficulty level must not exceed 20 characters")
+    @Column(name = "difficulty_level", nullable = false)
+    private String difficultyLevel;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
@@ -116,7 +121,7 @@ public class Course {
         this.projects = new HashSet<>();
     }
 
-    public Course(String code, String title, String description, Subject subject, User professor, String semester, String year, Integer credits, Integer maxStudents) {
+    public Course(String code, String title, String description, Subject subject, User professor, String semester, String year, Integer credits, Integer maxStudents, String difficultyLevel) {
         this();
         this.code = code;
         this.title = title;
@@ -127,6 +132,7 @@ public class Course {
         this.year = year;
         this.credits = credits;
         this.maxStudents = maxStudents;
+        this.difficultyLevel = difficultyLevel;
     }
 
     // Getters and Setters
@@ -159,6 +165,9 @@ public class Course {
 
     public Integer getMaxStudents() { return maxStudents; }
     public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }
+
+    public String getDifficultyLevel() { return difficultyLevel; }
+    public void setDifficultyLevel(String difficultyLevel) { this.difficultyLevel = difficultyLevel; }
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }

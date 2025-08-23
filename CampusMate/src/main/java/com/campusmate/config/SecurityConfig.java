@@ -52,6 +52,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()  // Allow auth endpoints
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/public/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()

@@ -1,6 +1,7 @@
 package com.campusmate.controller;
 
 import com.campusmate.dto.response.ApiResponse;
+import com.campusmate.dto.request.CreateCourseRequest;
 import com.campusmate.entity.Course;
 import com.campusmate.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class CourseController {
     }
     
     @PostMapping
-    public ResponseEntity<ApiResponse<Course>> createCourse(@RequestBody Course course) {
-        Course createdCourse = courseService.createCourse(course);
+    public ResponseEntity<ApiResponse<Course>> createCourse(@RequestBody CreateCourseRequest request) {
+        Course createdCourse = courseService.createCourseFromRequest(request);
         return ResponseEntity.ok(ApiResponse.success("Course created successfully", createdCourse));
     }
     

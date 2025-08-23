@@ -24,13 +24,11 @@ public class RegisterRequest {
     private String email;
     
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", 
-             message = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")
+    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
     
     @NotBlank(message = "Student ID is required")
-    @Pattern(regexp = "^[A-Z0-9]{8,12}$", message = "Student ID must be 8-12 alphanumeric characters")
+    @Size(min = 3, max = 20, message = "Student ID must be between 3 and 20 characters")
     private String studentId;
     
     @NotBlank(message = "Department is required")
