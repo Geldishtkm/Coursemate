@@ -1,0 +1,156 @@
+spring:
+  application:
+    name: campusmate-backend
+
+  
+  profiles:
+    active: dev
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/CampusMate
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:newpassword}
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+        
+  flyway:
+    enabled: false
+    # locations: classpath:db/migration
+    # baseline-on-migrate: true
+    # baseline-on-migrate: true
+    # locations: classpath:db/migration
+    # validate-on-migrate: true
+    
+  security:
+    jwt:
+      secret: ${JWT_SECRET:your-super-secret-jwt-key-here-change-in-production}
+      expiration: ${JWT_EXPIRATION:86400000} # 24 hours
+      refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days
+      
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=600s
+
+server:
+  port: ${PORT:8080}
+  # servlet:
+  #   context-path: /api/v1
+    
+logging:
+  level:
+    com.campusmate: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/campusmate.log
+    max-size: 10MB
+    max-history: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+      
+  datasource:
+    url: jdbc:postgresql://localhost:5432/CampusMate
+    username: postgres
+    password: newpassword
+    
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+      
+logging:
+  level:
+    com.campusmate: DEBUG
+    org.springframework.security: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      
+logging:
+  level:
+    com.campusmate: WARN
+    org.springframework.security: WARN
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+    
+  datasource:
+    url: jdbc:tc:postgresql:15:///testdb
+    username: test
+    password: test
+    
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false

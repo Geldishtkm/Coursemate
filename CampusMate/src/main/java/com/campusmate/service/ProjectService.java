@@ -1,0 +1,178 @@
+package com.campusmate.service;
+
+import com.campusmate.entity.Project;
+import com.campusmate.entity.User;
+import com.campusmate.entity.Course;
+import com.campusmate.repository.ProjectRepository;
+import com.campusmate.repository.UserRepository;
+import com.campusmate.repository.CourseRepository;
+import com.campusmate.enums.ProjectStatus;
+import com.campusmate.enums.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class ProjectService {
+    
+    @Autowired
+    private ProjectRepository projectRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private CourseRepository courseRepository;
+    
+    public List<Project> getAllProjects() {
+        return projectRepository.findAll();
+    }
+    
+    public Optional<Project> getProjectById(String id) {
+        return projectRepository.findById(id);
+    }
+    
+    public Project createProject(Project project) {
+        // Set required fields if not provided
+        if (project.getId() == null) {
+            project.setId(UUID.randomUUID().toString());
+        }
+        if (project.getCurrentMembers() == null) {
+            project.setCurrentMembers(1); // Leader is automatically a member
+        }
+        if (project.getProgress() == null) {
+            project.setProgress(0);
+        }
+        if (project.getStatus() == null) {
+            project.setStatus(ProjectStatus.RECRUITING);
+        }
+        if (project.getSkillsRequired() == null) {
+            project.setSkillsRequired(new HashSet<>());
+        }
+        
+        // Set default deadline if not provided (3 months from now)
+        if (project.getDeadline() == null) {
+            project.setDeadline(LocalDateTime.now().plusMonths(3));
+        }
+        
+        // TODO: Get current user from security context for leader
+        // For now, create a mock leader if none provided
+        if (project.getLeader() == null) {
+            User mockLeader = createMockLeader();
+            project.setLeader(mockLeader);
+        }
+        
+        return projectRepository.save(project);
+    }
+    
+    /**
+     * Create a project from the CreateProjectRequest DTO
+     * This method properly maps frontend data to the Project entity
+     */
+    public Project createProjectFromRequest(com.campusmate.dto.request.CreateProjectRequest request) {
+        Project project = new Project();
+        
+        // Set basic fields from request
+        project.setTitle(request.getTitle());
+        project.setDescription(request.getDescription());
+        project.setCategory(request.getCategory());
+        project.setMaxMembers(request.getSpots()); // Map spots to maxMembers
+        
+        // Set required fields with defaults
+        project.setId(UUID.randomUUID().toString());
+        project.setCurrentMembers(1); // Leader is automatically a member
+        project.setProgress(0);
+        project.setStatus(ProjectStatus.RECRUITING);
+        project.setSkillsRequired(new HashSet<>());
+        project.setDeadline(LocalDateTime.now().plusMonths(3)); // Default 3 months deadline
+        
+        // Set leader (mock for now)
+        User mockLeader = createMockLeader();
+        project.setLeader(mockLeader);
+        
+        // Set course if provided
+        if (request.getCourseId() != null && !request.getCourseId().trim().isEmpty()) {
+            Optional<Course> course = courseRepository.findById(request.getCourseId());
+            course.ifPresent(project::setCourse);
+        }
+        
+        return projectRepository.save(project);
+    }
+    
+    /**
+     * Create a mock leader user for development/testing
+     * TODO: Replace with actual user from security context
+     */
+    private User createMockLeader() {
+        User mockLeader = new User();
+        mockLeader.setId("mock-leader-" + UUID.randomUUID().toString().substring(0, 8));
+        mockLeader.setEmail("mock@leader.com");
+        mockLeader.setPassword("mockpassword");
+        mockLeader.setFirstName("Mock");
+        mockLeader.setLastName("Leader");
+        mockLeader.setRole(UserRole.STUDENT);
+        mockLeader.setIsActive(true);
+        mockLeader.setCreatedAt(LocalDateTime.now());
+        mockLeader.setUpdatedAt(LocalDateTime.now());
+        
+        // Save the mock user to database
+        return userRepository.save(mockLeader);
+    }
+    
+    public Project updateProject(String id, Project projectDetails) {
+        Project project = projectRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Project not found"));
+        
+        project.setTitle(projectDetails.getTitle());
+        project.setDescription(projectDetails.getDescription());
+        project.setCategory(projectDetails.getCategory());
+        project.setStatus(projectDetails.getStatus());
+        project.setMaxMembers(projectDetails.getMaxMembers());
+        project.setProgress(projectDetails.getProgress());
+        project.setDeadline(projectDetails.getDeadline());
+        project.setSkillsRequired(projectDetails.getSkillsRequired());
+        
+        return projectRepository.save(project);
+    }
+    
+    public void deleteProject(String id) {
+        projectRepository.deleteById(id);
+    }
+    
+    public List<Project> getProjectsByLeader(String leaderId) {
+        return projectRepository.findByLeaderId(leaderId);
+    }
+    
+    public List<Project> getProjectsByCourse(String courseId) {
+        return projectRepository.findByCourseId(courseId);
+    }
+    
+    public List<Project> getProjectsByStatus(String status) {
+        return projectRepository.findByStatus(status);
+    }
+    
+    public List<Project> getProjectsByCategory(String category) {
+        return projectRepository.findByCategory(category);
+    }
+    
+    public List<Project> getProjectsWithAvailableSlots() {
+        return projectRepository.findProjectsWithAvailableSlots();
+    }
+    
+    public List<Project> searchProjects(String keyword) {
+        return projectRepository.searchByKeyword(keyword);
+    }
+    
+    public List<Project> getProjectsBySkill(String skill) {
+        return projectRepository.findBySkillsRequiredContaining(skill);
+    }
+    
+    public List<Project> getProjectsBeforeDeadline(LocalDateTime deadline) {
+        return projectRepository.findProjectsBeforeDeadline(deadline);
+    }
+}

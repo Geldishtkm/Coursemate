@@ -1,0 +1,587 @@
+2025-08-23 09:14:45 [restartedMain] INFO  c.campusmate.CoursemateApplication - Starting CoursemateApplication using Java 24.0.1 with PID 8400 (C:\Users\geldi\Downloads\coursemate\CampusMate\target\classes started by geldi in C:\Users\geldi\Downloads\coursemate\CampusMate)
+2025-08-23 09:14:45 [restartedMain] DEBUG c.campusmate.CoursemateApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-08-23 09:14:46 [restartedMain] INFO  c.campusmate.CoursemateApplication - The following 1 profile is active: "dev"
+2025-08-23 09:14:46 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-08-23 09:14:46 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-08-23 09:14:46 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-23 09:14:46 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 76 ms. Found 6 JPA repository interfaces.
+2025-08-23 09:14:47 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-08-23 09:14:47 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-23 09:14:47 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-08-23 09:14:47 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-23 09:14:47 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1711 ms
+2025-08-23 09:14:47 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-23 09:14:47 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2025-08-23 09:14:47 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-08-23 09:14:48 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-23 09:14:48 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-08-23 09:14:48 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1aba017c
+2025-08-23 09:14:48 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-08-23 09:14:48 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-23 09:14:48 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 17.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-08-23 09:14:49 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    set client_min_messages = WARNING
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists course_materials 
+       drop constraint if exists FKjobqk7m872wjsw0y29tle6wek
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists course_materials 
+       drop constraint if exists FKpnxoasam5wwkq6a7hvpv81cf
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists courses 
+       drop constraint if exists FKt423twvp6smhwx073dsqmwcpc
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists courses 
+       drop constraint if exists FK5tckdihu5akp5nkxiacx1gfhi
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists enrollments 
+       drop constraint if exists FKho8mcicp4196ebpltdn9wl6co
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists enrollments 
+       drop constraint if exists FK3hjx6rcnbmfw368sxigrpfpx0
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists project_members 
+       drop constraint if exists FKdki1sp2homqsdcvqm9yrix31g
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists project_members 
+       drop constraint if exists FKgul2el0qjk5lsvig3wgajwm77
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists project_skills 
+       drop constraint if exists FK57v4gsyik9h1a1xu92sp1f3wj
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists projects 
+       drop constraint if exists FKpefksuunh3nqudnug39tn30rh
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists projects 
+       drop constraint if exists FK7uqjwo7rwcmh3grohbxf6aojx
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       drop constraint if exists FK91llpyuka998prpp74dlbat43
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       drop constraint if exists FK4uiet71wu27txmjacqckatv09
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       drop constraint if exists FKba4blvhoejvsw0spfjj3ukchr
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists query_tags 
+       drop constraint if exists FK9c3qkbghmp08rt8la79cwfa53
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists responses 
+       drop constraint if exists FKmcwx6rn2uuqhd1pjsbem3l2ll
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists responses 
+       drop constraint if exists FK2dqjek2toluk5yqpvw9195apo
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists subject_prerequisites 
+       drop constraint if exists FKi2pk0tltinduehdgkvotwwa2b
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists subject_topics 
+       drop constraint if exists FKdh89j0o6ym6bdcr6igx1i9xov
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists votes 
+       drop constraint if exists FKli4uj3ic2vypf5pialchj925e
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists course_materials cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists courses cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists enrollments cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists project_members cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists project_skills cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists projects cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists queries cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists query_tags cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists responses cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists subject_prerequisites cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists subject_topics cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists subjects cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists users cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    drop table if exists votes cascade
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table course_materials (
+        is_public boolean not null,
+        created_at timestamp(6) not null,
+        file_size bigint not null,
+        updated_at timestamp(6) not null,
+        title varchar(200) not null,
+        description TEXT,
+        course_id varchar(255) not null,
+        file_name varchar(255) not null,
+        file_url varchar(255) not null,
+        id varchar(255) not null,
+        type varchar(255) not null check (type in ('VIDEO','DOCUMENT','CODE','IMAGE','OTHER')),
+        uploaded_by varchar(255) not null,
+        primary key (id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table courses (
+        credits integer not null,
+        is_active boolean not null,
+        max_students integer not null,
+        created_at timestamp(6) not null,
+        updated_at timestamp(6) not null,
+        year varchar(10) not null,
+        code varchar(20) not null unique,
+        semester varchar(20) not null,
+        title varchar(200) not null,
+        description TEXT,
+        id varchar(255) not null,
+        professor_id varchar(255) not null,
+        subject_id varchar(255) not null,
+        primary key (id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table enrollments (
+        is_active boolean not null,
+        completed_at timestamp(6),
+        created_at timestamp(6) not null,
+        enrolled_at timestamp(6) not null,
+        updated_at timestamp(6) not null,
+        course_id varchar(255) not null,
+        grade varchar(255),
+        id varchar(255) not null,
+        user_id varchar(255) not null,
+        primary key (id),
+        constraint idx_enrollment_user_course unique (user_id, course_id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table project_members (
+        is_active boolean not null,
+        created_at timestamp(6) not null,
+        joined_at timestamp(6) not null,
+        updated_at timestamp(6) not null,
+        id varchar(255) not null,
+        project_id varchar(255) not null,
+        role varchar(255) not null check (role in ('LEADER','MEMBER','CONTRIBUTOR')),
+        user_id varchar(255) not null,
+        primary key (id),
+        constraint idx_project_member_unique unique (project_id, user_id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table project_skills (
+        project_id varchar(255) not null,
+        skill varchar(255)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table projects (
+        current_members integer not null,
+        max_members integer not null,
+        progress integer not null,
+        created_at timestamp(6) not null,
+        deadline timestamp(6) not null,
+        updated_at timestamp(6) not null,
+        category varchar(100) not null,
+        title varchar(200) not null,
+        description TEXT not null,
+        course_id varchar(255),
+        id varchar(255) not null,
+        leader_id varchar(255) not null,
+        status varchar(255) not null check (status in ('RECRUITING','ACTIVE','COMPLETED','PAUSED')),
+        primary key (id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table queries (
+        downvotes integer not null,
+        is_solved boolean not null,
+        response_count integer not null,
+        upvotes integer not null,
+        created_at timestamp(6) not null,
+        solved_at timestamp(6),
+        updated_at timestamp(6) not null,
+        category varchar(100) not null,
+        title varchar(200) not null,
+        content TEXT not null,
+        author_id varchar(255) not null,
+        course_id varchar(255),
+        id varchar(255) not null,
+        solved_by varchar(255),
+        status varchar(255) not null check (status in ('OPEN','ANSWERED','CLOSED')),
+        primary key (id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table query_tags (
+        query_id varchar(255) not null,
+        tag varchar(255)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table responses (
+        downvotes integer not null,
+        is_accepted boolean not null,
+        upvotes integer not null,
+        created_at timestamp(6) not null,
+        updated_at timestamp(6) not null,
+        content TEXT not null,
+        author_id varchar(255) not null,
+        id varchar(255) not null,
+        query_id varchar(255) not null,
+        primary key (id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table subject_prerequisites (
+        prerequisite varchar(255),
+        subject_id varchar(255) not null
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table subject_topics (
+        subject_id varchar(255) not null,
+        topic varchar(255)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table subjects (
+        credits integer not null,
+        created_at timestamp(6) not null,
+        updated_at timestamp(6) not null,
+        code varchar(20) not null unique,
+        department varchar(100) not null,
+        name varchar(200) not null,
+        description TEXT,
+        difficulty varchar(255) not null check (difficulty in ('BEGINNER','INTERMEDIATE','ADVANCED')),
+        id varchar(255) not null,
+        primary key (id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table users (
+        is_active boolean not null,
+        created_at timestamp(6) not null,
+        last_login timestamp(6),
+        updated_at timestamp(6) not null,
+        student_id varchar(20),
+        first_name varchar(50) not null,
+        last_name varchar(50) not null,
+        department varchar(100),
+        avatar_url varchar(255),
+        email varchar(255) not null unique,
+        id varchar(255) not null,
+        password varchar(255) not null,
+        role varchar(255) not null check (role in ('STUDENT','TUTOR','ADMIN')),
+        primary key (id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create table votes (
+        created_at timestamp(6) not null,
+        id varchar(255) not null,
+        target_id varchar(255) not null,
+        target_type varchar(255) not null check (target_type in ('UPVOTE','DOWNVOTE','QUERY','RESPONSE')),
+        user_id varchar(255) not null,
+        vote_type varchar(255) not null check (vote_type in ('UPVOTE','DOWNVOTE','QUERY','RESPONSE')),
+        primary key (id),
+        constraint idx_vote_unique unique (user_id, target_type, target_id)
+    )
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_material_course 
+       on course_materials (course_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_material_type 
+       on course_materials (type)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_material_uploaded_by 
+       on course_materials (uploaded_by)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_material_public 
+       on course_materials (is_public)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_course_subject 
+       on courses (subject_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_course_professor 
+       on courses (professor_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_course_semester_year 
+       on courses (semester, year)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_enrollment_user 
+       on enrollments (user_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_enrollment_course 
+       on enrollments (course_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_enrollment_status 
+       on enrollments (is_active)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_project_member_project 
+       on project_members (project_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_project_member_user 
+       on project_members (user_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_project_leader 
+       on projects (leader_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_project_course 
+       on projects (course_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_project_category 
+       on projects (category)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_project_status 
+       on projects (status)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_project_deadline 
+       on projects (deadline)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_query_author 
+       on queries (author_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_query_course 
+       on queries (course_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_query_category 
+       on queries (category)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_query_status 
+       on queries (status)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_query_created 
+       on queries (created_at)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_response_query 
+       on responses (query_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_response_author 
+       on responses (author_id)
+2025-08-23 09:14:49 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_response_accepted 
+       on responses (is_accepted)
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_subject_department 
+       on subjects (department)
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_subject_difficulty 
+       on subjects (difficulty)
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_user_student_id 
+       on users (student_id)
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_user_role 
+       on users (role)
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_vote_user 
+       on votes (user_id)
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    create index idx_vote_target 
+       on votes (target_type, target_id)
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists course_materials 
+       add constraint FKjobqk7m872wjsw0y29tle6wek 
+       foreign key (course_id) 
+       references courses
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists course_materials 
+       add constraint FKpnxoasam5wwkq6a7hvpv81cf 
+       foreign key (uploaded_by) 
+       references users
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists courses 
+       add constraint FKt423twvp6smhwx073dsqmwcpc 
+       foreign key (professor_id) 
+       references users
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists courses 
+       add constraint FK5tckdihu5akp5nkxiacx1gfhi 
+       foreign key (subject_id) 
+       references subjects
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists enrollments 
+       add constraint FKho8mcicp4196ebpltdn9wl6co 
+       foreign key (course_id) 
+       references courses
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists enrollments 
+       add constraint FK3hjx6rcnbmfw368sxigrpfpx0 
+       foreign key (user_id) 
+       references users
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists project_members 
+       add constraint FKdki1sp2homqsdcvqm9yrix31g 
+       foreign key (project_id) 
+       references projects
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists project_members 
+       add constraint FKgul2el0qjk5lsvig3wgajwm77 
+       foreign key (user_id) 
+       references users
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists project_skills 
+       add constraint FK57v4gsyik9h1a1xu92sp1f3wj 
+       foreign key (project_id) 
+       references projects
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists projects 
+       add constraint FKpefksuunh3nqudnug39tn30rh 
+       foreign key (course_id) 
+       references courses
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists projects 
+       add constraint FK7uqjwo7rwcmh3grohbxf6aojx 
+       foreign key (leader_id) 
+       references users
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       add constraint FK91llpyuka998prpp74dlbat43 
+       foreign key (author_id) 
+       references users
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       add constraint FK4uiet71wu27txmjacqckatv09 
+       foreign key (course_id) 
+       references courses
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       add constraint FKba4blvhoejvsw0spfjj3ukchr 
+       foreign key (solved_by) 
+       references users
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists query_tags 
+       add constraint FK9c3qkbghmp08rt8la79cwfa53 
+       foreign key (query_id) 
+       references queries
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists responses 
+       add constraint FKmcwx6rn2uuqhd1pjsbem3l2ll 
+       foreign key (author_id) 
+       references users
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists responses 
+       add constraint FK2dqjek2toluk5yqpvw9195apo 
+       foreign key (query_id) 
+       references queries
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists subject_prerequisites 
+       add constraint FKi2pk0tltinduehdgkvotwwa2b 
+       foreign key (subject_id) 
+       references subjects
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists subject_topics 
+       add constraint FKdh89j0o6ym6bdcr6igx1i9xov 
+       foreign key (subject_id) 
+       references subjects
+2025-08-23 09:14:50 [restartedMain] DEBUG org.hibernate.SQL - 
+    alter table if exists votes 
+       add constraint FKli4uj3ic2vypf5pialchj925e 
+       foreign key (user_id) 
+       references users
+2025-08-23 09:14:50 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-23 09:14:50 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-23 09:14:50 [restartedMain] DEBUG c.c.security.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-08-23 09:14:51 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-08-23 09:14:51 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-23 09:14:51 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-08-23 09:14:51 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-08-23 09:14:52 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-08-23 09:14:52 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-08-23 09:14:52 [restartedMain] INFO  c.campusmate.CoursemateApplication - Started CoursemateApplication in 6.777 seconds (process running for 7.158)
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-08-23 09:15:13 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    set client_min_messages = WARNING
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists course_materials 
+       drop constraint if exists FKjobqk7m872wjsw0y29tle6wek
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists course_materials 
+       drop constraint if exists FKpnxoasam5wwkq6a7hvpv81cf
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists courses 
+       drop constraint if exists FKt423twvp6smhwx073dsqmwcpc
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists courses 
+       drop constraint if exists FK5tckdihu5akp5nkxiacx1gfhi
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists enrollments 
+       drop constraint if exists FKho8mcicp4196ebpltdn9wl6co
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists enrollments 
+       drop constraint if exists FK3hjx6rcnbmfw368sxigrpfpx0
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists project_members 
+       drop constraint if exists FKdki1sp2homqsdcvqm9yrix31g
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists project_members 
+       drop constraint if exists FKgul2el0qjk5lsvig3wgajwm77
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists project_skills 
+       drop constraint if exists FK57v4gsyik9h1a1xu92sp1f3wj
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists projects 
+       drop constraint if exists FKpefksuunh3nqudnug39tn30rh
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists projects 
+       drop constraint if exists FK7uqjwo7rwcmh3grohbxf6aojx
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       drop constraint if exists FK91llpyuka998prpp74dlbat43
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       drop constraint if exists FK4uiet71wu27txmjacqckatv09
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists queries 
+       drop constraint if exists FKba4blvhoejvsw0spfjj3ukchr
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists query_tags 
+       drop constraint if exists FK9c3qkbghmp08rt8la79cwfa53
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists responses 
+       drop constraint if exists FKmcwx6rn2uuqhd1pjsbem3l2ll
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists responses 
+       drop constraint if exists FK2dqjek2toluk5yqpvw9195apo
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists subject_prerequisites 
+       drop constraint if exists FKi2pk0tltinduehdgkvotwwa2b
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists subject_topics 
+       drop constraint if exists FKdh89j0o6ym6bdcr6igx1i9xov
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    alter table if exists votes 
+       drop constraint if exists FKli4uj3ic2vypf5pialchj925e
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists course_materials cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists courses cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists enrollments cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists project_members cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists project_skills cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists projects cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists queries cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists query_tags cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists responses cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists subject_prerequisites cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists subject_topics cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists subjects cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists users cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists votes cascade
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-08-23 09:15:13 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
