@@ -1,6 +1,7 @@
 package com.campusmate.controller;
 
 import com.campusmate.dto.request.CreateQueryRequest;
+import com.campusmate.dto.request.CreateResponseRequest;
 import com.campusmate.dto.response.ApiResponse;
 import com.campusmate.entity.Query;
 import com.campusmate.entity.Response;
@@ -259,14 +260,51 @@ public class QueryController {
     }
     
     @PostMapping("/{id}/responses")
-    public ResponseEntity<ApiResponse<Response>> createResponse(@PathVariable String id, @RequestBody Response response) {
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<ApiResponse<Response>> createResponse(@PathVariable String id, @RequestBody CreateResponseRequest request) {
         log.info("Creating response for query with id: {}", id);
         
         try {
-            // Set the query ID for the response
+            // Get the query
             Query query = queryService.getQueryById(id)
                 .orElseThrow(() -> new RuntimeException("Query not found"));
+            
+            // For now, create a default user (in a real app, get from authentication context)
+            User author;
+            try {
+                // First try to find any existing user
+                Optional<User> existingUser = userRepository.findAll().stream().findFirst();
+                if (existingUser.isPresent()) {
+                    author = existingUser.get();
+                } else {
+                    // Check if our default anonymous user already exists
+                    Optional<User> anonymousUser = userRepository.findByEmail("anonymous@campusmate.com");
+                    if (anonymousUser.isPresent()) {
+                        author = anonymousUser.get();
+                    } else {
+                        // Create a default user if none exists
+                        User defaultUser = new User();
+                        defaultUser.setEmail("anonymous@campusmate.com");
+                        defaultUser.setFirstName("Anonymous");
+                        defaultUser.setLastName("User");
+                        defaultUser.setPassword("password123"); // This would be hashed in real app
+                        defaultUser.setRole(com.campusmate.enums.UserRole.STUDENT);
+                        defaultUser.setIsActive(true);
+                        defaultUser.setDepartment("Computer Science");
+                        author = userRepository.save(defaultUser);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error creating/finding user for response: {}", e.getMessage());
+                throw new RuntimeException("Failed to create or find user for response: " + e.getMessage());
+            }
+            
+            // Create response entity
+            Response response = new Response();
+            response.setContent(request.getContent());
             response.setQuery(query);
+            response.setAuthor(author);
+            response.setIsAccepted(false);
             
             Response createdResponse = responseService.createResponse(response);
             return ResponseEntity.ok(ApiResponse.success("Response created successfully", createdResponse));
