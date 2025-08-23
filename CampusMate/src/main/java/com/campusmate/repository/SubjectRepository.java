@@ -25,4 +25,6 @@ public interface SubjectRepository extends JpaRepository<Subject, String> {
     
     @Query("SELECT s FROM Subject s WHERE :prerequisite MEMBER OF s.prerequisites")
     List<Subject> findByPrerequisite(@Param("prerequisite") String prerequisite);
+    
+    Optional<Subject> findByNameIgnoreCase(String name);
 }

@@ -19,11 +19,11 @@ public class CreateCourseRequest {
     @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;
 
-    @NotBlank(message = "Subject ID is required")
-    private String subjectId;
-
     @NotBlank(message = "Professor name is required")
     private String professorName;
+
+    @NotBlank(message = "Subject name is required")
+    private String subjectName;
 
     @Size(max = 20, message = "Semester must not exceed 20 characters")
     private String semester;
@@ -83,11 +83,11 @@ public class CreateCourseRequest {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public String getSubjectId() { return subjectId; }
-    public void setSubjectId(String subjectId) { this.subjectId = subjectId; }
-
     public String getProfessorName() { return professorName; }
     public void setProfessorName(String professorName) { this.professorName = professorName; }
+
+    public String getSubjectName() { return subjectName; }
+    public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
 
     public String getSemester() { return semester; }
     public void setSemester(String semester) { this.semester = semester; }
