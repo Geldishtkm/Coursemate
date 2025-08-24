@@ -4,7 +4,11 @@ package com.campusmate.enums;
  * Enum representing types of course materials
  */
 public enum MaterialType {
+    LECTURE("Lecture"),
+    ASSIGNMENT("Assignment"),
+    READING("Reading"),
     VIDEO("Video"),
+    QUIZ("Quiz"),
     DOCUMENT("Document"),
     CODE("Code"),
     IMAGE("Image"),

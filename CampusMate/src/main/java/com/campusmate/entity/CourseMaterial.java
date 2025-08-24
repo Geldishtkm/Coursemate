@@ -51,9 +51,12 @@ public class CourseMaterial {
     @Column(nullable = false)
     private MaterialType type;
 
-    @NotBlank(message = "File URL is required")
-    @Column(name = "file_url", nullable = false)
+    @Column(name = "file_url")
     private String fileUrl;
+
+    @Lob
+    @Column(name = "file_data")
+    private byte[] fileData;
 
     @NotNull(message = "File size is required")
     @Positive(message = "File size must be positive")
@@ -117,6 +120,9 @@ public class CourseMaterial {
 
     public String getFileUrl() { return fileUrl; }
     public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
+
+    public byte[] getFileData() { return fileData; }
+    public void setFileData(byte[] fileData) { this.fileData = fileData; }
 
     public Long getFileSize() { return fileSize; }
     public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
