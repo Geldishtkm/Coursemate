@@ -179,7 +179,16 @@ public class CourseService {
             .collect(Collectors.toList());
     }
     
-    public Course updateCourse(String id, Course courseDetails) {
+    public Course updateCourse(String id, Course courseDetails, String userEmail) {
+        // Get current user to check role
+        User currentUser = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("Current user not found"));
+        
+        // Check if user is admin
+        if (currentUser.getRole() != UserRole.ADMIN) {
+            throw new RuntimeException("Unauthorized: Only administrators can update courses");
+        }
+        
         Course course = courseRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Course not found"));
         
@@ -192,7 +201,16 @@ public class CourseService {
         return courseRepository.save(course);
     }
     
-    public void deleteCourse(String id) {
+    public void deleteCourse(String id, String userEmail) {
+        // Get current user to check role
+        User currentUser = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("Current user not found"));
+        
+        // Check if user is admin
+        if (currentUser.getRole() != UserRole.ADMIN) {
+            throw new RuntimeException("Unauthorized: Only administrators can delete courses");
+        }
+        
         courseRepository.deleteById(id);
     }
     

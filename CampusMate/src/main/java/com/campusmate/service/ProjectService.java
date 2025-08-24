@@ -3,11 +3,18 @@ package com.campusmate.service;
 import com.campusmate.entity.Project;
 import com.campusmate.entity.User;
 import com.campusmate.entity.Course;
+import com.campusmate.entity.ProjectJoinRequest;
+import com.campusmate.entity.ProjectMember;
 import com.campusmate.repository.ProjectRepository;
 import com.campusmate.repository.UserRepository;
 import com.campusmate.repository.CourseRepository;
+import com.campusmate.repository.ProjectJoinRequestRepository;
 import com.campusmate.enums.ProjectStatus;
 import com.campusmate.enums.UserRole;
+import com.campusmate.dto.request.ProjectJoinRequestDto;
+import com.campusmate.dto.request.ProjectJoinResponseDto;
+import com.campusmate.dto.response.ProjectJoinRequestResponseDto;
+import com.campusmate.dto.response.ProjectResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +37,14 @@ public class ProjectService {
     @Autowired
     private CourseRepository courseRepository;
     
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+    @Autowired
+    private ProjectJoinRequestRepository projectJoinRequestRepository;
+    
+    public List<ProjectResponseDto> getAllProjects() {
+        List<Project> projects = projectRepository.findAll();
+        return projects.stream()
+            .map(ProjectResponseDto::new)
+            .collect(java.util.stream.Collectors.toList());
     }
     
     public Optional<Project> getProjectById(String id) {
@@ -44,7 +57,13 @@ public class ProjectService {
             project.setCurrentMembers(1); // Leader is automatically a member
         }
         if (project.getProgress() == null) {
-            project.setProgress(0);
+            // Calculate initial progress based on current members vs max members
+            if (project.getMaxMembers() != null && project.getCurrentMembers() != null) {
+                int initialProgress = (int) Math.round((double) project.getCurrentMembers() / project.getMaxMembers() * 100);
+                project.setProgress(initialProgress);
+            } else {
+                project.setProgress(0);
+            }
         }
         if (project.getStatus() == null) {
             project.setStatus(ProjectStatus.RECRUITING);
@@ -73,30 +92,47 @@ public class ProjectService {
      * This method properly maps frontend data to the Project entity
      */
     @Transactional
-    public Project createProjectFromRequest(com.campusmate.dto.request.CreateProjectRequest request) {
+    public Project createProjectFromRequest(com.campusmate.dto.request.CreateProjectRequest request, String userEmail) {
         Project project = new Project();
         
         // Set basic fields from request
         project.setTitle(request.getTitle());
         project.setDescription(request.getDescription());
         project.setCategory(request.getCategory());
-        project.setMaxMembers(request.getSpots()); // Map spots to maxMembers
+        
+        // Ensure maxMembers is never null
+        Integer maxMembers = request.getSpots();
+        if (maxMembers == null || maxMembers <= 0) {
+            maxMembers = 5; // Default to 5 members if not provided
+        }
+        project.setMaxMembers(maxMembers);
         
         // Set required fields with defaults (ID will be auto-generated)
         project.setCurrentMembers(1); // Leader is automatically a member
-        project.setProgress(0);
         project.setStatus(ProjectStatus.RECRUITING);
         project.setSkillsRequired(new HashSet<>());
         project.setDeadline(LocalDateTime.now().plusMonths(3)); // Default 3 months deadline
         
-        // Set leader (mock for now)
-        User mockLeader = createMockLeader();
-        project.setLeader(mockLeader);
+        // Set leader (actual authenticated user)
+        User leader = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("User not found: " + userEmail));
+        project.setLeader(leader);
         
         // Set course if provided
         if (request.getCourseId() != null && !request.getCourseId().trim().isEmpty()) {
             Optional<Course> course = courseRepository.findById(request.getCourseId());
             course.ifPresent(project::setCourse);
+        }
+        
+        // Calculate initial progress based on leader being the first member
+        Integer currentMembers = project.getCurrentMembers();
+        Integer projectMaxMembers = project.getMaxMembers();
+        
+        if (currentMembers != null && projectMaxMembers != null && projectMaxMembers > 0) {
+            int initialProgress = (int) Math.round((double) currentMembers / projectMaxMembers * 100);
+            project.setProgress(initialProgress);
+        } else {
+            project.setProgress(20); // Default progress when leader joins
         }
         
         return projectRepository.save(project);
@@ -142,9 +178,20 @@ public class ProjectService {
         }
     }
     
-    public Project updateProject(String id, Project projectDetails) {
+    public Project updateProject(String id, Project projectDetails, String userEmail) {
         Project project = projectRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Project not found"));
+        
+        // Check if user is the project leader OR is an admin
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        boolean isProjectLeader = project.getLeader().getEmail().equals(userEmail);
+        boolean isAdmin = user.getRole() == UserRole.ADMIN;
+        
+        if (!isProjectLeader && !isAdmin) {
+            throw new RuntimeException("Only the project leader or administrators can update this project");
+        }
         
         project.setTitle(projectDetails.getTitle());
         project.setDescription(projectDetails.getDescription());
@@ -158,7 +205,23 @@ public class ProjectService {
         return projectRepository.save(project);
     }
     
-    public void deleteProject(String id) {
+    public void deleteProject(String id, String userEmail) {
+        Project project = projectRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Project not found"));
+        
+        // Check if user is the project leader OR is an admin
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        boolean isProjectLeader = project.getLeader().getEmail().equals(userEmail);
+        boolean isAdmin = user.getRole() == UserRole.ADMIN;
+        
+        if (!isProjectLeader && !isAdmin) {
+            throw new RuntimeException("Only the project leader or administrators can delete this project");
+        }
+        
+        // With cascade delete, we can just delete the project directly
+        // All related join requests and members will be deleted automatically
         projectRepository.deleteById(id);
     }
     
@@ -192,5 +255,202 @@ public class ProjectService {
     
     public List<Project> getProjectsBeforeDeadline(LocalDateTime deadline) {
         return projectRepository.findProjectsBeforeDeadline(deadline);
+    }
+
+    // ========== PROJECT JOIN REQUEST METHODS ==========
+
+    /**
+     * Request to join a project
+     */
+    @Transactional
+    public ProjectJoinRequest requestToJoinProject(ProjectJoinRequestDto requestDto, String userEmail) {
+        // Get the project
+        Project project = projectRepository.findById(requestDto.getProjectId())
+            .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        // Get the user
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if project is recruiting
+        if (!ProjectStatus.RECRUITING.equals(project.getStatus())) {
+            throw new RuntimeException("Project is not currently recruiting members");
+        }
+
+        // Check if user is already a member
+        if (project.getMembers().stream().anyMatch(member -> member.getUser().getId().equals(user.getId()))) {
+            throw new RuntimeException("User is already a member of this project");
+        }
+
+        // Check if user has already requested to join
+        if (projectJoinRequestRepository.existsByProjectIdAndUserId(project.getId(), user.getId())) {
+            throw new RuntimeException("User has already requested to join this project");
+        }
+
+        // Check if project has available slots
+        if (project.getCurrentMembers() >= project.getMaxMembers()) {
+            throw new RuntimeException("Project is full and cannot accept new members");
+        }
+
+        // Create join request
+        ProjectJoinRequest joinRequest = new ProjectJoinRequest(project, user, requestDto.getMessage());
+        return projectJoinRequestRepository.save(joinRequest);
+    }
+
+    /**
+     * Get all pending join requests for a project
+     */
+    public List<ProjectJoinRequestResponseDto> getPendingJoinRequests(String projectId) {
+        List<ProjectJoinRequest> requests = projectJoinRequestRepository.findByProjectIdAndStatus(projectId, ProjectJoinRequest.RequestStatus.PENDING);
+        return requests.stream()
+            .map(ProjectJoinRequestResponseDto::new)
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
+     * Get all join requests for projects led by a user
+     */
+    public List<ProjectJoinRequestResponseDto> getJoinRequestsForUserProjects(String leaderEmail) {
+        User leader = userRepository.findByEmail(leaderEmail)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        List<ProjectJoinRequest> requests = projectJoinRequestRepository.findByProjectLeaderIdAndStatus(leader.getId(), ProjectJoinRequest.RequestStatus.PENDING);
+        return requests.stream()
+            .map(ProjectJoinRequestResponseDto::new)
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
+     * Respond to a join request (approve/reject)
+     */
+    @Transactional
+    public ProjectJoinRequestResponseDto respondToJoinRequest(ProjectJoinResponseDto responseDto, String leaderEmail) {
+        // Get the join request with pessimistic lock to prevent race conditions
+        ProjectJoinRequest joinRequest = projectJoinRequestRepository.findById(responseDto.getRequestId())
+            .orElseThrow(() -> new RuntimeException("Join request not found"));
+
+        // Get the leader
+        User leader = userRepository.findByEmail(leaderEmail)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if the user is the project leader
+        if (!joinRequest.getProject().getLeader().getId().equals(leader.getId())) {
+            throw new RuntimeException("Only the project leader can respond to join requests");
+        }
+
+        // Check if request is still pending - use a more robust check
+        if (!ProjectJoinRequest.RequestStatus.PENDING.equals(joinRequest.getStatus())) {
+            throw new RuntimeException("Join request has already been processed. Current status: " + joinRequest.getStatus());
+        }
+
+        // Update the join request
+        joinRequest.setStatus(responseDto.isApprove() ? 
+            ProjectJoinRequest.RequestStatus.APPROVED : ProjectJoinRequest.RequestStatus.REJECTED);
+        joinRequest.setResponseMessage(responseDto.getResponseMessage());
+        joinRequest.setRespondedBy(leader);
+        joinRequest.setRespondedAt(LocalDateTime.now());
+
+        // Save the join request first
+        ProjectJoinRequest savedRequest = projectJoinRequestRepository.save(joinRequest);
+        
+        // Flush to ensure the status is persisted
+        projectJoinRequestRepository.flush();
+
+        // If approved, add user to project
+        if (responseDto.isApprove()) {
+            addUserToProject(joinRequest.getProject(), joinRequest.getUser());
+        }
+
+        // Return DTO instead of entity to avoid serialization issues
+        return new ProjectJoinRequestResponseDto(savedRequest);
+    }
+
+    /**
+     * Add a user to a project as a member
+     */
+    @Transactional
+    private void addUserToProject(Project project, User user) {
+        // Create project member
+        ProjectMember member = new ProjectMember(project, user, ProjectMember.ProjectRole.MEMBER);
+        project.getMembers().add(member);
+
+        // Update project member count
+        project.setCurrentMembers(project.getCurrentMembers() + 1);
+
+        // Calculate progress as percentage of filled spots
+        int newProgress = (int) Math.round((double) project.getCurrentMembers() / project.getMaxMembers() * 100);
+        project.setProgress(newProgress);
+
+        // Check if project is now full
+        if (project.getCurrentMembers() >= project.getMaxMembers()) {
+            project.setStatus(ProjectStatus.ACTIVE);
+        }
+
+        // Save project
+        projectRepository.save(project);
+    }
+
+    /**
+     * Get user's join requests
+     */
+    public List<ProjectJoinRequestResponseDto> getUserJoinRequests(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        List<ProjectJoinRequest> requests = projectJoinRequestRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        return requests.stream()
+            .map(ProjectJoinRequestResponseDto::new)
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
+     * Cancel a join request
+     */
+    @Transactional
+    public void cancelJoinRequest(String requestId, String userEmail) {
+        ProjectJoinRequest joinRequest = projectJoinRequestRepository.findById(requestId)
+            .orElseThrow(() -> new RuntimeException("Join request not found"));
+
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("User can only cancel their own join requests"));
+
+        // Check if user owns the request
+        if (!joinRequest.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("User can only cancel their own join requests");
+        }
+
+        // Check if request is still pending
+        if (!ProjectJoinRequest.RequestStatus.PENDING.equals(joinRequest.getStatus())) {
+            throw new RuntimeException("Cannot cancel a processed join request");
+        }
+
+        projectJoinRequestRepository.delete(joinRequest);
+    }
+
+    /**
+     * Get user's status with a project (member, pending request, or none)
+     */
+    public String getUserProjectStatus(String projectId, String userEmail) {
+        try {
+            Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+            User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Check if user is already a member
+            if (project.getMembers().stream().anyMatch(member -> member.getUser().getId().equals(user.getId()))) {
+                return "MEMBER";
+            }
+
+            // Check if user has already requested to join
+            if (projectJoinRequestRepository.existsByProjectIdAndUserId(project.getId(), user.getId())) {
+                return "REQUESTED";
+            }
+
+            return "NONE";
+        } catch (Exception e) {
+            return "NONE";
+        }
     }
 }

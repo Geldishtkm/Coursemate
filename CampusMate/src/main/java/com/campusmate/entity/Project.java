@@ -3,6 +3,7 @@ package com.campusmate.entity;
 import com.campusmate.enums.ProjectStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,6 +30,14 @@ import java.util.Set;
     @Index(name = "idx_project_deadline", columnList = "deadline")
 })
 @EntityListeners(AuditingEntityListener.class)
+@NamedEntityGraph(
+    name = "Project.withLeader",
+    attributeNodes = {
+        @NamedAttributeNode("leader"),
+        @NamedAttributeNode("members"),
+        @NamedAttributeNode("joinRequests")
+    }
+)
 public class Project {
 
     @Id
@@ -53,7 +62,7 @@ public class Project {
     @NotNull(message = "Leader is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leader_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private User leader;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -95,8 +104,12 @@ public class Project {
 
     // Relationships
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonIgnore
     private Set<ProjectMember> members = new HashSet<>();
+    
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<ProjectJoinRequest> joinRequests = new HashSet<>();
 
     // Constructors
     public Project() {
@@ -104,6 +117,7 @@ public class Project {
         this.progress = 0;
         this.skillsRequired = new HashSet<>();
         this.members = new HashSet<>();
+        this.joinRequests = new HashSet<>();
     }
 
     public Project(String title, String description, String category, User leader, Course course, ProjectStatus status, Integer maxMembers, LocalDateTime deadline) {
@@ -163,6 +177,9 @@ public class Project {
 
     public Set<ProjectMember> getMembers() { return members; }
     public void setMembers(Set<ProjectMember> members) { this.members = members; }
+    
+    public Set<ProjectJoinRequest> getJoinRequests() { return joinRequests; }
+    public void setJoinRequests(Set<ProjectJoinRequest> joinRequests) { this.joinRequests = joinRequests; }
 
     @PrePersist
     protected void onCreate() {

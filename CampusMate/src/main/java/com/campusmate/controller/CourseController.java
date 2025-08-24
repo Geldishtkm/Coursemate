@@ -6,6 +6,7 @@ import com.campusmate.entity.Course;
 import com.campusmate.entity.User;
 import com.campusmate.enums.UserRole;
 import com.campusmate.service.CourseService;
+import com.campusmate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,9 +46,18 @@ public class CourseController {
                 .body(ApiResponse.error("Authentication required"));
         }
         
-        // Get user details from authentication
-        User currentUser = (User) authentication.getPrincipal();
-        if (currentUser == null || !UserRole.ADMIN.equals(currentUser.getRole())) {
+        // Get user details from authentication - UserDetails contains the email
+        String userEmail = authentication.getName();
+        if (userEmail == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("User email not found in authentication"));
+        }
+        
+        // Check if user has ADMIN role from authorities
+        boolean isAdmin = authentication.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (!isAdmin) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error("Only administrators can create courses"));
         }
@@ -65,13 +75,17 @@ public class CourseController {
                 .body(ApiResponse.error("Authentication required"));
         }
         
-        User currentUser = (User) authentication.getPrincipal();
-        if (currentUser == null || !UserRole.ADMIN.equals(currentUser.getRole())) {
+        // Check if user has ADMIN role from authorities
+        boolean isAdmin = authentication.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (!isAdmin) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error("Only administrators can update courses"));
         }
         
-        Course updatedCourse = courseService.updateCourse(id, course);
+        String userEmail = authentication.getName();
+        Course updatedCourse = courseService.updateCourse(id, course, userEmail);
         return ResponseEntity.ok(ApiResponse.success("Course updated successfully", updatedCourse));
     }
     
@@ -84,13 +98,17 @@ public class CourseController {
                 .body(ApiResponse.error("Authentication required"));
         }
         
-        User currentUser = (User) authentication.getPrincipal();
-        if (currentUser == null || !UserRole.ADMIN.equals(currentUser.getRole())) {
+        // Check if user has ADMIN role from authorities
+        boolean isAdmin = authentication.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (!isAdmin) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error("Only administrators can delete courses"));
         }
         
-        courseService.deleteCourse(id);
+        String userEmail = authentication.getName();
+        courseService.deleteCourse(id, userEmail);
         return ResponseEntity.ok(ApiResponse.success("Course deleted successfully", null));
     }
     

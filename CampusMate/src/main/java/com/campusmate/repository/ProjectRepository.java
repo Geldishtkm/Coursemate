@@ -3,6 +3,7 @@ package com.campusmate.repository;
 import com.campusmate.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,11 @@ import java.util.List;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, String> {
     
+    @Override
+    @EntityGraph(attributePaths = {"leader", "members", "joinRequests"})
+    List<Project> findAll();
+    
+    @EntityGraph(attributePaths = {"leader"})
     List<Project> findByLeaderId(String leaderId);
     
     List<Project> findByCourseId(String courseId);

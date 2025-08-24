@@ -61,8 +61,8 @@ public class QueryService {
     private User getOrCreateMockUser() {
         log.info("Getting or creating mock user");
         
-        // Try to find existing mock user
-        Optional<User> existingUser = userRepository.findById("mock-user-id");
+        // Try to find existing mock user by email
+        Optional<User> existingUser = userRepository.findByEmail("mock@user.com");
         if (existingUser.isPresent()) {
             log.info("Mock user found: {}", existingUser.get().getId());
             return existingUser.get();
@@ -125,10 +125,16 @@ public class QueryService {
         
         Query query = existingQuery.get();
         
+        // Get current user to check role
+        User currentUser = userRepository.findById(currentUserId)
+            .orElseThrow(() -> new RuntimeException("Current user not found"));
+        
         // Check if user is the author or admin
-        if (!query.getAuthor().getId().equals(currentUserId)) {
-            // TODO: Add admin check here
-            throw new RuntimeException("Unauthorized: Only the author can update this query");
+        boolean isAuthor = query.getAuthor().getId().equals(currentUserId);
+        boolean isAdmin = currentUser.getRole() == UserRole.ADMIN;
+        
+        if (!isAuthor && !isAdmin) {
+            throw new RuntimeException("Unauthorized: Only the author or administrators can update this query");
         }
         
         // Update fields
@@ -145,19 +151,50 @@ public class QueryService {
     public boolean deleteQuery(String id, String currentUserId) {
         log.info("Deleting query with id: {}", id);
         
-        Optional<Query> query = queryRepository.findById(id);
-        if (query.isEmpty()) {
+        Optional<Query> queryOpt = queryRepository.findById(id);
+        if (queryOpt.isEmpty()) {
+            log.warn("Query not found with id: {}", id);
             return false;
         }
         
-        // Check if user is the author or admin
-        if (!query.get().getAuthor().getId().equals(currentUserId)) {
-            // TODO: Add admin check here
-            throw new RuntimeException("Unauthorized: Only the author can delete this query");
+        Query query = queryOpt.get();
+        
+        // Get current user to check role
+        User currentUser = userRepository.findById(currentUserId)
+            .orElseThrow(() -> new RuntimeException("Current user not found"));
+        
+        // Check if user is admin first (admin can delete any query without author validation)
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            log.info("Admin user {} deleting query {} - bypassing author check", currentUserId, id);
+            try {
+                queryRepository.deleteById(id);
+                log.info("Query {} deleted successfully by admin {}", id, currentUserId);
+                return true;
+            } catch (Exception e) {
+                log.error("Error deleting query {} by admin {}: {}", id, currentUserId, e.getMessage(), e);
+                throw new RuntimeException("Failed to delete query: " + e.getMessage());
+            }
         }
         
-        queryRepository.deleteById(id);
-        return true;
+        // Only check author relationship for non-admin users
+        if (query.getAuthor() != null && query.getAuthor().getId() != null) {
+            boolean isAuthor = query.getAuthor().getId().equals(currentUserId);
+            if (isAuthor) {
+                log.info("Author user {} deleting their query {}", currentUserId, id);
+                try {
+                    queryRepository.deleteById(id);
+                    log.info("Query {} deleted successfully by author {}", id, currentUserId);
+                    return true;
+                } catch (Exception e) {
+                    log.error("Error deleting query {} by author {}: {}", id, currentUserId, e.getMessage(), e);
+                    throw new RuntimeException("Failed to delete query: " + e.getMessage());
+                }
+            }
+        }
+        
+        // If we get here, user is not authorized
+        log.warn("User {} not authorized to delete query {}", currentUserId, id);
+        throw new RuntimeException("Unauthorized: Only the author or administrators can delete this query");
     }
 
     // Upvote query
@@ -221,5 +258,25 @@ public class QueryService {
     public List<Query> getQueriesByTags(Set<String> tags) {
         log.info("Fetching queries by tags: {}", tags);
         return queryRepository.findByTagsContaining(new ArrayList<>(tags));
+    }
+
+    // Admin delete query - bypasses all user validation
+    public boolean adminDeleteQuery(String id) {
+        log.info("Admin deleting query with id: {}", id);
+        
+        Optional<Query> queryOpt = queryRepository.findById(id);
+        if (queryOpt.isEmpty()) {
+            log.warn("Query not found with id: {}", id);
+            return false;
+        }
+        
+        try {
+            queryRepository.deleteById(id);
+            log.info("Query {} deleted successfully by admin", id);
+            return true;
+        } catch (Exception e) {
+            log.error("Error deleting query {} by admin: {}", id, e.getMessage(), e);
+            throw new RuntimeException("Failed to delete query: " + e.getMessage());
+        }
     }
 }
