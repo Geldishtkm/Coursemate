@@ -3,10 +3,15 @@ package com.campusmate.controller;
 import com.campusmate.dto.response.ApiResponse;
 import com.campusmate.dto.request.CreateCourseRequest;
 import com.campusmate.entity.Course;
+import com.campusmate.entity.User;
+import com.campusmate.enums.UserRole;
 import com.campusmate.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -33,18 +38,58 @@ public class CourseController {
     
     @PostMapping
     public ResponseEntity<ApiResponse<Course>> createCourse(@RequestBody CreateCourseRequest request) {
+        // Check if user is authenticated and has ADMIN role
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Authentication required"));
+        }
+        
+        // Get user details from authentication
+        User currentUser = (User) authentication.getPrincipal();
+        if (currentUser == null || !UserRole.ADMIN.equals(currentUser.getRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("Only administrators can create courses"));
+        }
+        
         Course createdCourse = courseService.createCourseFromRequest(request);
         return ResponseEntity.ok(ApiResponse.success("Course created successfully", createdCourse));
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Course>> updateCourse(@PathVariable String id, @RequestBody Course course) {
+        // Check if user is authenticated and has ADMIN role
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Authentication required"));
+        }
+        
+        User currentUser = (User) authentication.getPrincipal();
+        if (currentUser == null || !UserRole.ADMIN.equals(currentUser.getRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("Only administrators can update courses"));
+        }
+        
         Course updatedCourse = courseService.updateCourse(id, course);
         return ResponseEntity.ok(ApiResponse.success("Course updated successfully", updatedCourse));
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteCourse(@PathVariable String id) {
+        // Check if user is authenticated and has ADMIN role
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Authentication required"));
+        }
+        
+        User currentUser = (User) authentication.getPrincipal();
+        if (currentUser == null || !UserRole.ADMIN.equals(currentUser.getRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("Only administrators can delete courses"));
+        }
+        
         courseService.deleteCourse(id);
         return ResponseEntity.ok(ApiResponse.success("Course deleted successfully", null));
     }

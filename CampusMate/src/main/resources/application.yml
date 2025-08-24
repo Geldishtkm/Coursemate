@@ -14,7 +14,7 @@ spring:
     
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -36,7 +36,7 @@ spring:
     
   security:
     jwt:
-      secret: ${JWT_SECRET:your-super-secret-jwt-key-here-change-in-production}
+      secret: ${JWT_SECRET:Z2V0dGluZ19zdGFydGVkX3dpdGhfc3ByaW5nX2Jvb3RfYW5kX2phdmE}
       expiration: ${JWT_EXPIRATION:86400000} # 24 hours
       refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days
       
@@ -108,7 +108,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       
 logging:
   level:

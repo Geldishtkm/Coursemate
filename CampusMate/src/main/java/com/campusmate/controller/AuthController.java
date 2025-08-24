@@ -6,6 +6,7 @@ import com.campusmate.dto.response.ApiResponse;
 import com.campusmate.dto.response.AuthResponse;
 import com.campusmate.entity.User;
 import com.campusmate.service.UserService;
+import com.campusmate.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class AuthController {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private JwtService jwtService;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
@@ -61,13 +65,28 @@ public class AuthController {
                         .body(ApiResponse.error("Account is deactivated"));
             }
             
-            // Create auth response (for now, return mock tokens)
-            // TODO: Implement actual JWT token generation
+            // Generate real JWT tokens
+            String accessToken = jwtService.generateToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+            
+            // Create auth response with real tokens and user info
+            AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getRole(),
+                    user.getStudentId(),
+                    user.getDepartment(),
+                    null // avatarUrl
+            );
+            
             AuthResponse authResponse = new AuthResponse(
-                    "mock-jwt-token-" + user.getId(),
-                    "mock-refresh-token-" + user.getId(),
+                    accessToken,
+                    refreshToken,
                     "Bearer", 
-                    86400000L
+                    86400000L,
+                    userInfo
             );
             
             log.info("User logged in successfully: {}", user.getEmail());
@@ -88,13 +107,28 @@ public class AuthController {
             // Register the user
             User registeredUser = userService.registerUser(request);
             
-            // Create auth response (for now, return mock tokens)
-            // TODO: Implement actual JWT token generation
+            // Generate real JWT tokens
+            String accessToken = jwtService.generateToken(registeredUser);
+            String refreshToken = jwtService.generateRefreshToken(registeredUser);
+            
+            // Create auth response with real tokens and user info
+            AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(
+                    registeredUser.getId(),
+                    registeredUser.getEmail(),
+                    registeredUser.getFirstName(),
+                    registeredUser.getLastName(),
+                    registeredUser.getRole(),
+                    registeredUser.getStudentId(),
+                    registeredUser.getDepartment(),
+                    null // avatarUrl
+            );
+            
             AuthResponse authResponse = new AuthResponse(
-                    "mock-jwt-token-" + registeredUser.getId(),
-                    "mock-refresh-token-" + registeredUser.getId(),
+                    accessToken,
+                    refreshToken,
                     "Bearer", 
-                    86400000L
+                    86400000L,
+                    userInfo
             );
             
             log.info("User registered successfully: {}", registeredUser.getEmail());
