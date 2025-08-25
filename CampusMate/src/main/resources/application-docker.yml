@@ -1,0 +1,42 @@
+spring:
+  config:
+    activate:
+      on-profile: docker
+      
+  datasource:
+    url: jdbc:postgresql://postgres:5432/CampusMate
+    username: postgres
+    password: newpassword
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        
+  mail:
+    host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:your-email@gmail.com}
+    password: ${SPRING_MAIL_PASSWORD:your-app-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Application specific configuration
+app:
+  frontend:
+    url: ${APP_FRONTEND_URL:http://localhost:3000}
+    
+logging:
+  level:
+    com.campusmate: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
