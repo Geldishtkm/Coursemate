@@ -2,7 +2,6 @@ spring:
   application:
     name: campusmate-backend
 
-  
   profiles:
     active: dev
   
@@ -28,11 +27,12 @@ spring:
         
   flyway:
     enabled: false
-    # locations: classpath:db/migration
-    # baseline-on-migrate: true
-    # baseline-on-migrate: true
-    # locations: classpath:db/migration
-    # validate-on-migrate: true
+
+  # Enable scheduling for email verification cleanup
+  task:
+    scheduling:
+      pool:
+        size: 5
     
   security:
     jwt:
@@ -44,12 +44,13 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-      
+
+  # 📧 Email configuration - Real Gmail SMTP (Development & Production)
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    username: ${MAIL_USERNAME:orazovgeldymurad@gmail.com}
+    password: ${MAIL_PASSWORD:ywrm svud ytag ovib}
     properties:
       mail:
         smtp:
@@ -66,6 +67,11 @@ server:
   port: ${PORT:8080}
   # servlet:
   #   context-path: /api/v1
+
+# Application specific configuration
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:8082}
     
 logging:
   level:

@@ -19,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaAuditing
 // @EnableCaching
 // @EnableAsync
-// @EnableScheduling
+@EnableScheduling
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
 public class CoursemateApplication {
 

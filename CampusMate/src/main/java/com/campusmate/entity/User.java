@@ -75,6 +75,9 @@ public class User implements UserDetails {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
+
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
@@ -172,6 +175,9 @@ public class User implements UserDetails {
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
+    public Boolean getIsVerified() { return isVerified; }
+    public void setIsVerified(Boolean isVerified) { this.isVerified = isVerified; }
+
     public LocalDateTime getLastLogin() { return lastLogin; }
     public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
 
@@ -261,6 +267,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isActive;
+        return isActive && isVerified;
     }
 }

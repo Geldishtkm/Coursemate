@@ -29,11 +29,19 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailVerificationService emailVerificationService;
+
     /**
      * Register a new user
      */
     public User registerUser(RegisterRequest request) {
         log.info("Registering new user with email: {}", request.getEmail());
+
+        // Check if email service is configured
+        if (!emailVerificationService.isEmailServiceConfigured()) {
+            throw new RuntimeException("Registration service temporarily unavailable. Please contact administrator.");
+        }
 
         // Check if user already exists
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -59,6 +67,18 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
         log.info("User registered successfully with ID: {}", savedUser.getId());
+        
+        // Generate and send verification email (MANDATORY)
+        try {
+            String token = emailVerificationService.generateVerificationToken(savedUser);
+            emailVerificationService.resendVerificationEmail(savedUser);
+            log.info("Verification email sent to user: {}", savedUser.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send verification email to user: {}", savedUser.getEmail(), e);
+            // Email verification is mandatory - if it fails, we need to clean up the user
+            userRepository.delete(savedUser);
+            throw new RuntimeException("Registration failed: Could not send verification email. Please check your email configuration: " + e.getMessage());
+        }
         
         return savedUser;
     }
